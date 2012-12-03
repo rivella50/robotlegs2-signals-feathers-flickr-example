@@ -1,8 +1,6 @@
 package view.thumbsview
 {
 
-	import feathers.controls.Callout;
-	import feathers.controls.Label;
 	import feathers.controls.List;
 	import feathers.controls.renderers.IListItemRenderer;
 	import feathers.core.FeathersControl;
@@ -174,12 +172,9 @@ package view.thumbsview
 			_touchPointID = -1;
 		}
 
-		// TODO: this needs to be understood, run some traces to see what's going on
 		private function onControlTouched( event:TouchEvent ):void {
 			const touches:Vector.<Touch> = event.getTouches( this );
-			if( touches.length == 0 ) {
-				return;
-			}
+			if( touches.length == 0 ) return;
 			if( _touchPointID >= 0 ) {
 				var touch:Touch;
 				for each( var currentTouch:Touch in touches ) {
@@ -188,10 +183,7 @@ package view.thumbsview
 						break;
 					}
 				}
-				if( !touch ) {
-					return;
-				}
-				showCallout( _data.title );
+				if( !touch ) return;
 				if( touch.phase == TouchPhase.ENDED ) {
 					touch.getLocation( this, HELPER_POINT );
 					ScrollRectManager.adjustTouchLocation( HELPER_POINT, this );
@@ -209,14 +201,6 @@ package view.thumbsview
 					}
 				}
 			}
-		}
-
-		private function showCallout( title:String ):void {
-
-			const content:Label = new Label();
-			content.text = title;
-			Callout.show( content, this, Callout.DIRECTION_UP );
-
 		}
 
 		// ---------------------------------------------------------------------

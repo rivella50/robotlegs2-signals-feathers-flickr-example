@@ -8,6 +8,8 @@ package
 	import flash.display.Sprite;
 	import flash.display.StageAlign;
 	import flash.display.StageScaleMode;
+	import flash.events.Event;
+	import flash.geom.Rectangle;
 
 	import robotlegs.bender.bundles.mvcs.MVCSBundle;
 	import robotlegs.bender.extensions.contextView.ContextView;
@@ -56,6 +58,21 @@ package
 			DeviceCapabilities.screenPixelWidth = 1280;
 			DeviceCapabilities.screenPixelHeight = 800;
 
+			// Update Starling view port on stage resizes.
+			stage.addEventListener( Event.RESIZE, onStageResize, false, int.MAX_VALUE, true);
+		}
+		
+		private function onStageResize( event:Event ):void {
+			_starling.stage.stageWidth = stage.stageWidth;
+			_starling.stage.stageHeight = stage.stageHeight;
+			const viewPort:Rectangle = _starling.viewPort;
+			viewPort.width = stage.stageWidth;
+			viewPort.height = stage.stageHeight;
+			try {
+				_starling.viewPort = viewPort;
+			}
+			catch( error:Error ) {
+			}
 		}
 	}
 }

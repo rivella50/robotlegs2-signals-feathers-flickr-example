@@ -44,6 +44,7 @@ package view.imageview
 			_loader.contentLoaderInfo.addEventListener( ProgressEvent.PROGRESS, onLoaderProgress );
 
 			_progressBar = new ProgressBar();
+			_progressBar.visible = false;
 			_progressBar.minimum = 0;
 			_progressBar.maximum = 1;
 			_progressBar.value = 0;
@@ -62,6 +63,7 @@ package view.imageview
 		override protected function onLayout():void {
 
 			_header.width = stage.stageWidth;
+			_header.validate();
 
 			if( _image ) {
 				_image.height = stage.stageHeight - _header.height - AppSettings.THUMBS_PANEL_HEIGHT;
@@ -76,13 +78,14 @@ package view.imageview
 		}
 
 		public function showImage( item:GalleryItemVO ):void {
+			onLayout();
 			_progressBar.value = 0;
+			_progressBar.visible = true;
 			_header.title = item.title;
 			if( _image ) {
 				_image.visible = false;
 			}
 			_loader.load(new URLRequest( item.url ), LOADER_CONTEXT );
-			onLayout();
 		}
 
 		private function onLoaderComplete( event:Event ):void {
@@ -102,6 +105,7 @@ package view.imageview
 			_fadeTween = new Tween( _image, 0.25, Transitions.EASE_OUT );
 			_fadeTween.fadeTo( 1 );
 			Starling.juggler.add( _fadeTween );
+			_progressBar.visible = false;
 			onLayout();
 		}
 

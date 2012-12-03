@@ -46,7 +46,7 @@ package view.thumbsview
 			_list.layout = listLayout;
 			_list.backgroundSkin = new Quad( 100, AppSettings.THUMBS_PANEL_HEIGHT, 0x222222 );
 			_list.scrollerProperties.horizontalScrollPolicy = Scroller.SCROLL_POLICY_ON;
-			_list.scrollerProperties.snapScrollPositionsToPixels = true;
+//			_list.scrollerProperties.snapScrollPositionsToPixels = true;
 			_list.itemRendererType = GalleryItemRenderer;
 			_list.itemRendererProperties.labelField = "title";
 			_list.addEventListener( Event.CHANGE, onListChange );
@@ -61,6 +61,7 @@ package view.thumbsview
 			_list.width = stage.width;
 			_list.height = AppSettings.THUMBS_PANEL_HEIGHT;
 			_list.y = stage.stageHeight - _list.height;
+			_list.validate();
 
 		}
 

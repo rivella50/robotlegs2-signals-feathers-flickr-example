@@ -42,8 +42,8 @@ package
 			// Init Starling.
 			Starling.handleLostContext = true;
 			Starling.multitouchEnabled = true;
-			_starling = new Starling( StarlingRootSprite, stage );
-			_starling.enableErrorChecking =  true;
+			_starling = new Starling( StarlingRootSprite, stage, null, null, "auto", "baseline" );
+			_starling.enableErrorChecking = false;
 			_starling.showStats = true;
 			_starling.start();
 
@@ -59,10 +59,12 @@ package
 			DeviceCapabilities.screenPixelHeight = 800;
 
 			// Update Starling view port on stage resizes.
-			stage.addEventListener( Event.RESIZE, onStageResize, false, int.MAX_VALUE, true);
+			stage.addEventListener( Event.RESIZE, onStageResize, false, int.MAX_VALUE, true );
+			stage.addEventListener( Event.DEACTIVATE, onStageDeactivate, false, 0, true );
 		}
 		
 		private function onStageResize( event:Event ):void {
+			if( stage.stageWidth < 256 || stage.stageHeight < 256 ) return;
 			_starling.stage.stageWidth = stage.stageWidth;
 			_starling.stage.stageHeight = stage.stageHeight;
 			const viewPort:Rectangle = _starling.viewPort;
@@ -73,6 +75,16 @@ package
 			}
 			catch( error:Error ) {
 			}
+		}
+
+		private function onStageDeactivate( event:Event ):void {
+			_starling.stop();
+			stage.addEventListener( Event.ACTIVATE, onStageActivate, false, 0, true );
+		}
+
+		private function onStageActivate( event:Event ):void {
+			stage.removeEventListener( Event.ACTIVATE, onStageActivate );
+			_starling.start();
 		}
 	}
 }

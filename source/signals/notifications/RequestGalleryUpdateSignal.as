@@ -5,9 +5,9 @@ package signals.notifications
 
 	import org.osflash.signals.Signal;
 
-	public class NotifyGalleryLoadedSignal extends Signal
+	public class RequestGalleryUpdateSignal extends Signal
 	{
-		public function NotifyGalleryLoadedSignal() {
+		public function RequestGalleryUpdateSignal() {
 
 			super( Vector.<GalleryItemVO> );
 

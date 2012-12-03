@@ -21,7 +21,7 @@ package {
 	import service.FlickrImageService;
 	import service.IPhotoGalleryService;
 
-	import signals.notifications.NotifyGalleryLoadedSignal;
+	import signals.notifications.RequestGalleryUpdateSignal;
 	import signals.notifications.NotifyImageSelectedSignal;
 	import signals.requests.RequestGalleryLoadSignal;
 	import signals.requests.RequestImageSelectSignal;
@@ -63,7 +63,7 @@ package {
 			// Map commands.
 			commandMap.map( RequestGalleryLoadSignal ).toCommand( LoadGalleryCommand );
 			commandMap.map( RequestImageSelectSignal ).toCommand( SelectImageCommand );
-			commandMap.map( NotifyGalleryLoadedSignal ).toCommand( UpdateGalleryCommand );
+			commandMap.map( RequestGalleryUpdateSignal ).toCommand( UpdateGalleryCommand );
 
 			// Map independent notification signals.
 			injector.map( NotifyImageSelectedSignal ).asSingleton();

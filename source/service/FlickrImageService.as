@@ -10,7 +10,7 @@ package service
 
 	import robotlegs.bender.framework.api.ILogger;
 
-	import signals.notifications.NotifyGalleryLoadedSignal;
+	import signals.notifications.RequestGalleryUpdateSignal;
 
 	public class FlickrImageService implements IPhotoGalleryService
 	{
@@ -21,7 +21,7 @@ package service
 		public var logger:ILogger;
 
 		[Inject]
-		public var notifyGalleryLoadedSignal:NotifyGalleryLoadedSignal;
+		public var requestGalleryUpdateSignal:RequestGalleryUpdateSignal;
 
 		private static const FLICKR_API_KEY:String = "abbb50ead4f289ee0ef1baf1e3491cb9";
 		private static const FLICKR_URL:String = "http://api.flickr.com/services/rest/?method=flickr.interestingness.getList&api_key=" + FLICKR_API_KEY + "&format=rest";
@@ -75,7 +75,7 @@ package service
 				galleryItems.push( item );
 			}
 
-			notifyGalleryLoadedSignal.dispatch( galleryItems );
+			requestGalleryUpdateSignal.dispatch( galleryItems );
 
 		}
 	}

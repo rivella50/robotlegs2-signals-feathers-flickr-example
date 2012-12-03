@@ -6,7 +6,7 @@ package service
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 
-	import model.vo.GalleryItem;
+	import model.vo.GalleryItemVO;
 
 	import robotlegs.bender.framework.api.ILogger;
 
@@ -58,7 +58,7 @@ package service
 
 			}
 
-			const gallery:Vector.<GalleryItem> = new <GalleryItem>[];
+			const gallery:Vector.<GalleryItemVO> = new <GalleryItemVO>[];
 			const photosList:XMLList = result.photos.photo;
 			const photoCount:int = photosList.length();
 			for( var i:int = 0; i < photoCount; i++ ) {
@@ -70,7 +70,7 @@ package service
 				var thumbURL:String = url.replace( "{size}", "t" );
 				url = url.replace( "{size}", "b" );
 				var title:String = photoXML.@title.toString();
-				var item:GalleryItem = new GalleryItem( title, url, thumbURL );
+				var item:GalleryItemVO = new GalleryItemVO( title, url, thumbURL );
 				logger.info( item.toString() );
 				gallery.push( item );
 			}

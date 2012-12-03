@@ -1,7 +1,7 @@
 package signals.notifications
 {
 
-	import model.vo.GalleryItem;
+	import model.vo.GalleryItemVO;
 
 	import org.osflash.signals.Signal;
 
@@ -9,7 +9,7 @@ package signals.notifications
 	{
 		public function NotifyGalleryLoadedSignal() {
 
-			super( Vector.<GalleryItem> );
+			super( Vector.<GalleryItemVO> );
 
 		}
 	}

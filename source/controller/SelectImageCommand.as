@@ -2,14 +2,14 @@ package controller
 {
 
 	import model.GalleryModel;
-	import model.vo.GalleryItem;
+	import model.vo.GalleryItemVO;
 
 	import robotlegs.bender.framework.api.ILogger;
 
 	public class SelectImageCommand
 	{
 		[Inject]
-		public var item:GalleryItem;
+		public var item:GalleryItemVO;
 
 		[Inject]
 		public var galleryModel:GalleryModel;

@@ -1,7 +1,7 @@
 package view.imageview
 {
 
-	import model.vo.GalleryItem;
+	import model.vo.GalleryItemVO;
 
 	import robotlegs.bender.framework.api.ILogger;
 	import robotlegs.extensions.starlingViewMap.impl.StarlingMediator;
@@ -28,7 +28,7 @@ package view.imageview
 
 		}
 
-		private function onImageSelected( item:GalleryItem ):void {
+		private function onImageSelected( item:GalleryItemVO ):void {
 
 			view.showImage( item );
 

@@ -17,7 +17,7 @@ package view.thumbsview
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 
-	import model.vo.GalleryItem;
+	import model.vo.GalleryItemVO;
 
 	import starling.animation.Transitions;
 	import starling.animation.Tween;
@@ -223,7 +223,7 @@ package view.thumbsview
 		// IListItemRenderer implementation.
 		// ---------------------------------------------------------------------
 
-		private var _data:GalleryItem;
+		private var _data:GalleryItemVO;
 		private var _owner:List;
 		private var _index:int = -1;
 
@@ -258,7 +258,7 @@ package view.thumbsview
 		}
 
 		public function set data( value:Object ):void {
-			_data = value as GalleryItem;
+			_data = value as GalleryItemVO;
 			invalidate( INVALIDATION_FLAG_DATA );
 		}
 

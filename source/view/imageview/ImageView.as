@@ -12,7 +12,7 @@ package view.imageview
 	import flash.net.URLRequest;
 	import flash.system.LoaderContext;
 
-	import model.vo.GalleryItem;
+	import model.vo.GalleryItemVO;
 
 	import starling.animation.Transitions;
 	import starling.animation.Tween;
@@ -75,7 +75,7 @@ package view.imageview
 
 		}
 
-		public function showImage( item:GalleryItem ):void {
+		public function showImage( item:GalleryItemVO ):void {
 			_progressBar.value = 0;
 			_header.title = item.title;
 			if( _image ) {

@@ -6,7 +6,7 @@ package view.thumbsview
 	import feathers.data.ListCollection;
 	import feathers.layout.HorizontalLayout;
 
-	import model.vo.GalleryItem;
+	import model.vo.GalleryItemVO;
 
 	import org.osflash.signals.Signal;
 
@@ -25,7 +25,7 @@ package view.thumbsview
 
 			super();
 
-			imageSelectedSignal = new Signal( GalleryItem );
+			imageSelectedSignal = new Signal( GalleryItemVO );
 
 		}
 
@@ -66,12 +66,12 @@ package view.thumbsview
 
 		private function onListChange( event:Event ):void {
 
-			var item:GalleryItem = _list.selectedItem as GalleryItem;
+			var item:GalleryItemVO = _list.selectedItem as GalleryItemVO;
 			imageSelectedSignal.dispatch( item );
 
 		}
 
-		public function updateThumbs( gallery:Vector.<GalleryItem> ):void {
+		public function updateThumbs( gallery:Vector.<GalleryItemVO> ):void {
 			_list.dataProvider = new ListCollection( gallery );
 			_list.selectedIndex = 0;
 		}

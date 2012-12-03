@@ -3,7 +3,7 @@ package view.thumbsview
 
 	import flash.events.IEventDispatcher;
 
-	import model.vo.GalleryItem;
+	import model.vo.GalleryItemVO;
 
 	import robotlegs.bender.framework.api.ILogger;
 	import robotlegs.extensions.starlingViewMap.impl.StarlingMediator;
@@ -47,13 +47,13 @@ package view.thumbsview
 
 		}
 
-		private function onImageSelected( item:GalleryItem ):void {
+		private function onImageSelected( item:GalleryItemVO ):void {
 
 			requestImageSelectSignal.dispatch( item );
 
 		}
 
-		private function onGalleryLoaded( gallery:Vector.<GalleryItem> ):void {
+		private function onGalleryLoaded( gallery:Vector.<GalleryItemVO> ):void {
 
 			view.updateThumbs( gallery );
 

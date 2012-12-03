@@ -3,6 +3,11 @@ robotlegs2-signals-feathers-flickr-example
 
 A simple architecture test for a Flickr gallery application based on Robotlegs 2, Feathers and Signals. 100% GPU.
 
+Aknowledgements:
+
+This example is basically a combination of examples on the multiple libraries used. That is, the Feather's Gallery example, Joel Hook's Flickr Gallery example for RL2, etc. 
+
+
 Dependencies:
 
 - Robotlegs2 at https://github.com/robotlegs/robotlegs-framework

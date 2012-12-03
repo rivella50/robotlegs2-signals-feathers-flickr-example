@@ -1,13 +1,13 @@
 package model.vo
 {
 
-	public class GalleryItem
+	public class GalleryItemVO
 	{
 		public var title:String;
 		public var url:String;
 		public var thumbURL:String;
 
-		public function GalleryItem( title:String, url:String, thumbUrl:String ) {
+		public function GalleryItemVO( title:String, url:String, thumbUrl:String ) {
 
 			this.title = title;
 			this.url = url;

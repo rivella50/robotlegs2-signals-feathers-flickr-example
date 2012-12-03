@@ -21,7 +21,7 @@ package controller
 
 			logger.info( "updating gallery data" );
 
-			galleryModel.gallery = gallery;
+			galleryModel.galleryItems = gallery;
 
 		}
 	}

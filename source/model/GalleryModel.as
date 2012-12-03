@@ -15,16 +15,16 @@ package model
 		[Inject]
 		public var notifyImageSelectedSignal:NotifyImageSelectedSignal;
 
-		private var _gallery:Vector.<GalleryItemVO>;
+		private var _galleryItems:Vector.<GalleryItemVO>;
 		private var _selectedItem:GalleryItemVO;
 
-		public function set gallery( value:Vector.<GalleryItemVO> ):void {
-			_gallery = value;
+		public function set galleryItems( value:Vector.<GalleryItemVO> ):void {
+			_galleryItems = value;
 			logger.info( "gallery set: " + value );
 		}
 
-		public function get gallery():Vector.<GalleryItemVO> {
-			return _gallery;
+		public function get galleryItems():Vector.<GalleryItemVO> {
+			return _galleryItems;
 		}
 
 		public function set selectedItem( value:GalleryItemVO ):void {

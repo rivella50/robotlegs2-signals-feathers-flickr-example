@@ -46,7 +46,7 @@ package service
 
 		private function onUrlLoaderComplete( event:Event ):void {
 
-			logger.info( "gallery loaded" );
+			logger.info( "galleryItems loaded" );
 
 			_urlLoader.removeEventListener( Event.COMPLETE, onUrlLoaderComplete );
 
@@ -58,7 +58,7 @@ package service
 
 			}
 
-			const gallery:Vector.<GalleryItemVO> = new <GalleryItemVO>[];
+			const galleryItems:Vector.<GalleryItemVO> = new <GalleryItemVO>[];
 			const photosList:XMLList = result.photos.photo;
 			const photoCount:int = photosList.length();
 			for( var i:int = 0; i < photoCount; i++ ) {
@@ -72,10 +72,10 @@ package service
 				var title:String = photoXML.@title.toString();
 				var item:GalleryItemVO = new GalleryItemVO( title, url, thumbURL );
 				logger.info( item.toString() );
-				gallery.push( item );
+				galleryItems.push( item );
 			}
 
-			notifyGalleryLoadedSignal.dispatch( gallery );
+			notifyGalleryLoadedSignal.dispatch( galleryItems );
 
 		}
 	}

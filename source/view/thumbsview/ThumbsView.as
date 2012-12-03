@@ -71,8 +71,8 @@ package view.thumbsview
 
 		}
 
-		public function updateThumbs( gallery:Vector.<GalleryItemVO> ):void {
-			_list.dataProvider = new ListCollection( gallery );
+		public function setData( galleryItems:Vector.<GalleryItemVO> ):void {
+			_list.dataProvider = new ListCollection( galleryItems );
 			_list.selectedIndex = 0;
 		}
 	}

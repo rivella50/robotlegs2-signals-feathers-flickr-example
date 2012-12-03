@@ -53,9 +53,9 @@ package view.thumbsview
 
 		}
 
-		private function onGalleryLoaded( gallery:Vector.<GalleryItemVO> ):void {
+		private function onGalleryLoaded( galleryItems:Vector.<GalleryItemVO> ):void {
 
-			view.updateThumbs( gallery );
+			view.setData( galleryItems );
 
 		}
 	}

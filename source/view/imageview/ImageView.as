@@ -3,7 +3,6 @@ package view.imageview
 
 	import feathers.controls.Header;
 	import feathers.controls.ProgressBar;
-	import feathers.display.Image;
 
 	import flash.display.Bitmap;
 	import flash.display.Loader;
@@ -17,6 +16,7 @@ package view.imageview
 	import starling.animation.Transitions;
 	import starling.animation.Tween;
 	import starling.core.Starling;
+	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.textures.Texture;
 

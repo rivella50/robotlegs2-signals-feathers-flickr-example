@@ -55,6 +55,8 @@ package view.thumbsview
 
 		private function onGalleryLoaded( galleryItems:Vector.<GalleryItemVO> ):void {
 
+			logger.info( "setting gallery data" );
+
 			view.setData( galleryItems );
 
 		}

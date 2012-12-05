@@ -1,19 +1,12 @@
 package view.thumbsview
 {
-
+	import feathers.controls.ImageLoader;
 	import feathers.controls.List;
 	import feathers.controls.renderers.IListItemRenderer;
 	import feathers.core.FeathersControl;
-	import feathers.display.Image;
-	import feathers.display.ScrollRectManager;
+	import feathers.events.FeathersEventType;
 
-	import flash.display.Bitmap;
-	import flash.display.Loader;
-	import flash.events.IOErrorEvent;
-	import flash.events.SecurityErrorEvent;
 	import flash.geom.Point;
-	import flash.net.URLRequest;
-	import flash.system.LoaderContext;
 
 	import model.vo.GalleryItemVO;
 
@@ -24,242 +17,337 @@ package view.thumbsview
 	import starling.events.Touch;
 	import starling.events.TouchEvent;
 	import starling.events.TouchPhase;
-	import starling.textures.Texture;
 
 	public class GalleryItemRenderer extends FeathersControl implements IListItemRenderer
 	{
-		private var _loader:Loader;
-		private var _image:Image;
-		private var _currentImageURL:String;
-		private var _fadeTween:Tween;
-		private var _touchPointID:int = -1;
-
-		private static const LOADER_CONTEXT:LoaderContext = new LoaderContext( true );
+		/**
+		 * @private
+		 */
 		private static const HELPER_POINT:Point = new Point();
 
-		public function GalleryItemRenderer() {
-			super();
-			isQuickHitAreaEnabled = true;
-			addEventListener( TouchEvent.TOUCH, onControlTouched );
-			addEventListener( Event.REMOVED_FROM_STAGE, onRemovedFromStage );
+		/**
+		 * @private
+		 */
+		private static const HELPER_TOUCHES_VECTOR:Vector.<Touch> = new <Touch>[];
+
+		/**
+		 * Constructor.
+		 */
+		public function GalleryItemRenderer()
+		{
+			this.isQuickHitAreaEnabled = true;
+			this.addEventListener(TouchEvent.TOUCH, touchHandler);
+			this.addEventListener(Event.REMOVED_FROM_STAGE, removedFromStageHandler)
 		}
 
-		override protected function draw():void {
+		/**
+		 * @private
+		 */
+		protected var image:ImageLoader;
 
-//			trace( "GalleryItemRenderer.as - draw() - data: " + _data );
+		/**
+		 * @private
+		 */
+		protected var touchPointID:int = -1;
 
-			if( isInvalid( INVALIDATION_FLAG_DATA ) ) {
-				if( _data ) {
-					if( _data.thumbURL != _currentImageURL ) {
-						// Clean up.
-						if( _loader ) {
-							clearLoader();
-						}
-						if( _image ) {
-							_image.visible = false;
-						}
-						if( _fadeTween ) {
-							Starling.juggler.remove( _fadeTween );
-							_fadeTween = null;	
-						}
-						// Reload.
-						_currentImageURL = _data.thumbURL;
-						_loader = new Loader();
-						_loader.contentLoaderInfo.addEventListener( Event.COMPLETE, onLoaderComplete );
-						_loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, onLoaderError );
-						_loader.contentLoaderInfo.addEventListener( SecurityErrorEvent.SECURITY_ERROR, onLoaderError );
-						_loader.load(new URLRequest( _data.thumbURL ), LOADER_CONTEXT );
-					}
+		/**
+		 * @private
+		 */
+		protected var fadeTween:Tween;
+
+		/**
+		 * @private
+		 */
+		private var _index:int = -1;
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get index():int
+		{
+			return this._index;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set index(value:int):void
+		{
+			if(this._index == value)
+			{
+				return;
+			}
+			this._index = value;
+			this.invalidate(INVALIDATION_FLAG_DATA);
+		}
+
+		/**
+		 * @private
+		 */
+		protected var _owner:List;
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get owner():List
+		{
+			return List(this._owner);
+		}
+
+		/**
+		 * @private
+		 */
+		public function set owner(value:List):void
+		{
+			if(this._owner == value)
+			{
+				return;
+			}
+			if(this._owner)
+			{
+				this._owner.removeEventListener(Event.SCROLL, owner_scrollHandler);
+			}
+			this._owner = value;
+			if(this._owner)
+			{
+				this._owner.addEventListener(Event.SCROLL, owner_scrollHandler);
+			}
+			this.invalidate(INVALIDATION_FLAG_DATA);
+		}
+
+		/**
+		 * @private
+		 */
+		private var _data:GalleryItemVO;
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get data():Object
+		{
+			return this._data;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set data(value:Object):void
+		{
+			if(this._data == value)
+			{
+				return;
+			}
+			this.touchPointID = -1;
+			this._data = GalleryItemVO(value);
+			this.invalidate(INVALIDATION_FLAG_DATA);
+		}
+
+		/**
+		 * @private
+		 */
+		private var _isSelected:Boolean;
+
+		/**
+		 * @inheritDoc
+		 */
+		public function get isSelected():Boolean
+		{
+			return this._isSelected;
+		}
+
+		/**
+		 * @private
+		 */
+		public function set isSelected(value:Boolean):void
+		{
+			if(this._isSelected == value)
+			{
+				return;
+			}
+			this._isSelected = value;
+			this.dispatchEventWith(Event.CHANGE);
+		}
+
+		/**
+		 * @private
+		 */
+		override protected function initialize():void
+		{
+			this.image = new ImageLoader();
+			this.image.addEventListener(Event.COMPLETE, image_completeHandler);
+			this.image.addEventListener(FeathersEventType.ERROR, image_errorHandler);
+			this.addChild(this.image);
+		}
+
+		/**
+		 * @private
+		 */
+		override protected function draw():void
+		{
+			const dataInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_DATA);
+			const selectionInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_SELECTED);
+			var sizeInvalid:Boolean = this.isInvalid(INVALIDATION_FLAG_SIZE);
+
+			if(dataInvalid)
+			{
+				if(this.fadeTween)
+				{
+					this.fadeTween.advanceTime(Number.MAX_VALUE);
 				}
-				else {
-					if( _loader ) {
-						clearLoader();
-					}
-					if( _image ) {
-						clearImage();
-					}
-					_currentImageURL = null;
+				if(this._data)
+				{
+					this.image.visible = false;
+					this.image.source = this._data.thumbURL;
+				}
+				else
+				{
+					this.image.source = null;
 				}
 			}
 
-			if( autoSizeNeeded() || isInvalid( INVALIDATION_FLAG_SIZE ) ) {
-				if( _image ) {
-					_image.x = ( actualWidth - _image.width ) / 2;
-					_image.y = ( actualHeight - _image.height ) / 2;
-				}
-			}
+			sizeInvalid = this.autoSizeIfNeeded() || sizeInvalid;
 
+			if(sizeInvalid)
+			{
+				this.image.width = this.actualWidth;
+				this.image.height = this.actualHeight;
+			}
 		}
 
-		private function autoSizeNeeded():Boolean {
-			const needsWidth:Boolean = isNaN( explicitWidth );
-			const needsHeight:Boolean = isNaN( explicitHeight );
-			if( !needsWidth && !needsHeight ) {
+		/**
+		 * @private
+		 */
+		protected function autoSizeIfNeeded():Boolean
+		{
+			const needsWidth:Boolean = isNaN(this.explicitWidth);
+			const needsHeight:Boolean = isNaN(this.explicitHeight);
+			if(!needsWidth && !needsHeight)
+			{
 				return false;
 			}
-			var newWidth:Number = explicitWidth;
-			if( needsWidth ) {
-				if( _image ) {
-					newWidth = _image.width;
+
+			this.image.width = this.image.height = NaN;
+			this.image.validate();
+			var newWidth:Number = this.explicitWidth;
+			if(needsWidth)
+			{
+				if(this.image.isLoaded)
+				{
+					newWidth = this.image.width;
 				}
-				else {
+				else
+				{
 					newWidth = 100;
 				}
 			}
-			var newHeight:Number = explicitHeight;
-			if( needsHeight ) {
-				if( _image ) {
-					newHeight = _image.height;
+			var newHeight:Number = this.explicitHeight;
+			if(needsHeight)
+			{
+				if(this.image.isLoaded)
+				{
+					newHeight = this.image.height;
 				}
-				else {
+				else
+				{
 					newHeight = 100;
 				}
 			}
-			return setSizeInternal( newWidth, newHeight, false );
+			return this.setSizeInternal(newWidth, newHeight, false);
 		}
 
-		private function clearLoader():void {
-			_loader.contentLoaderInfo.removeEventListener( Event.COMPLETE, onLoaderComplete );
-			_loader.contentLoaderInfo.removeEventListener( IOErrorEvent.IO_ERROR, onLoaderError );
-			_loader.contentLoaderInfo.removeEventListener( SecurityErrorEvent.SECURITY_ERROR, onLoaderError );
-			_loader = null;
+		/**
+		 * @private
+		 */
+		protected function fadeTween_onComplete():void
+		{
+			this.fadeTween = null;
 		}
 
-		private function clearImage():void {
-			_image.texture.dispose();
-			removeChild( _image, true );
-			_image = null;
+		/**
+		 * @private
+		 */
+		protected function removedFromStageHandler(event:Event):void
+		{
+			this.touchPointID = -1;
 		}
 
-		override public function dispose():void {
-			if( _image ) clearImage();
-			if( _loader ) clearLoader();
-			super.dispose();
-		}
-
-		private function onLoaderComplete( event:flash.events.Event ):void {
-
-			const bitmap:Bitmap = Bitmap( _loader.content );
-			const texture:Texture = Texture.fromBitmap( bitmap );
-			if( _image ) {
-				_image.texture.dispose();
-				_image.texture = texture;
-				_image.readjustSize();
+		/**
+		 * @private
+		 */
+		protected function touchHandler(event:TouchEvent):void
+		{
+			const touches:Vector.<Touch> = event.getTouches(this, null, HELPER_TOUCHES_VECTOR);
+			if(touches.length == 0)
+			{
+				return;
 			}
-			else {
-				_image = new Image( texture );
-				addChild( _image );
-			}
-			_image.alpha = 0;
-			_image.visible = true;
-			_fadeTween = new Tween( _image, 0.25, Transitions.EASE_OUT );
-			_fadeTween.fadeTo( 1 );
-			Starling.juggler.add( _fadeTween );
-			invalidate( INVALIDATION_FLAG_SIZE );
-
-			clearLoader();
-		}
-
-		private function onLoaderError( event:IOErrorEvent ):void {
-			clearLoader();
-		}
-
-		private function onOwnerScroll( event:Event ):void {
-			_touchPointID = -1;
-		}
-
-		private function onRemovedFromStage( event:Event ):void {
-			_touchPointID = -1;
-		}
-
-		private function onControlTouched( event:TouchEvent ):void {
-			const touches:Vector.<Touch> = event.getTouches( this );
-			if( touches.length == 0 ) return;
-			if( _touchPointID >= 0 ) {
+			if(this.touchPointID >= 0)
+			{
 				var touch:Touch;
-				for each( var currentTouch:Touch in touches ) {
-					if( currentTouch.id == _touchPointID ) {
+				for each(var currentTouch:Touch in touches)
+				{
+					if(currentTouch.id == this.touchPointID)
+					{
 						touch = currentTouch;
 						break;
 					}
 				}
-				if( !touch ) return;
-				if( touch.phase == TouchPhase.ENDED ) {
-					touch.getLocation( this, HELPER_POINT );
-					ScrollRectManager.adjustTouchLocation( HELPER_POINT, this );
-					if( hitTest( HELPER_POINT, true ) != null && !_isSelected ) {
-						isSelected = true;
-					}
-					_touchPointID = -1;
+				if(!touch)
+				{
+					HELPER_TOUCHES_VECTOR.length = 0;
+					return;
 				}
-			}
-			else {
-				for each( touch in touches ) {
-					if( touch.phase == TouchPhase.BEGAN ) {
-						_touchPointID = touch.id;
-						return;
+				if(touch.phase == TouchPhase.ENDED)
+				{
+					this.touchPointID = -1;
+
+					touch.getLocation(this, HELPER_POINT);
+					if(this.hitTest(HELPER_POINT, true) != null && !this._isSelected)
+					{
+						this.isSelected = true;
 					}
 				}
 			}
-		}
-
-		// ---------------------------------------------------------------------
-		// IListItemRenderer implementation.
-		// ---------------------------------------------------------------------
-
-		private var _data:GalleryItemVO;
-		private var _owner:List;
-		private var _index:int = -1;
-
-		public function get owner():List {
-			return _owner;
-		}
-
-		public function set owner( value:List ):void {
-			if( _owner && value == _owner ) return;
-			if( _owner ) {
-				_owner.removeEventListener( Event.SCROLL, onOwnerScroll );
+			else
+			{
+				for each(touch in touches)
+				{
+					if(touch.phase == TouchPhase.BEGAN)
+					{
+						this.touchPointID = touch.id;
+						break;
+					}
+				}
 			}
-			_owner = value;
-			if( _owner ) {
-				_owner.addEventListener( Event.SCROLL, onOwnerScroll );
-			}
-			invalidate( INVALIDATION_FLAG_DATA );
+			HELPER_TOUCHES_VECTOR.length = 0;
 		}
 
-		public function get index():int {
-			return _index;
+		/**
+		 * @private
+		 */
+		protected function owner_scrollHandler(event:Event):void
+		{
+			this.touchPointID = -1;
 		}
 
-		public function set index( value:int ):void {
-			if( _index == value ) return;
-			_index = value;
-			invalidate( INVALIDATION_FLAG_DATA );
+		/**
+		 * @private
+		 */
+		protected function image_completeHandler(event:Event):void
+		{
+			this.image.alpha = 0;
+			this.image.visible = true;
+			this.fadeTween = new Tween(this.image, 0.25, Transitions.EASE_OUT);
+			this.fadeTween.fadeTo(1);
+			this.fadeTween.onComplete = fadeTween_onComplete;
+			Starling.juggler.add(this.fadeTween);
+			this.invalidate(INVALIDATION_FLAG_SIZE);
 		}
 
-		public function get data():Object {
-			return _data;
+		protected function image_errorHandler(event:Event):void
+		{
+			this.invalidate(INVALIDATION_FLAG_SIZE);
 		}
 
-		public function set data( value:Object ):void {
-			_data = value as GalleryItemVO;
-			invalidate( INVALIDATION_FLAG_DATA );
-		}
-
-		// ---------------------------------------------------------------------
-		// IToggle implementation.
-		// ---------------------------------------------------------------------
-
-		private var _isSelected:Boolean;
-
-		public function get isSelected():Boolean {
-			return _isSelected;
-		}
-
-		public function set isSelected( value:Boolean ):void {
-			if( value == _isSelected ) return;
-			_isSelected = value;
-			dispatchEventWith( Event.CHANGE );
-		}
 	}
 }

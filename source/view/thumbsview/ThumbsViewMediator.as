@@ -8,7 +8,7 @@ package view.thumbsview
 	import robotlegs.bender.framework.api.ILogger;
 	import robotlegs.extensions.starlingViewMap.impl.StarlingMediator;
 
-	import signals.notifications.RequestGalleryUpdateSignal;
+	import signals.requests.RequestGalleryUpdateSignal;
 	import signals.requests.RequestImageSelectSignal;
 	import signals.requests.RequestGalleryLoadSignal;
 

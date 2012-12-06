@@ -10,7 +10,7 @@ package service
 
 	import robotlegs.bender.framework.api.ILogger;
 
-	import signals.notifications.RequestGalleryUpdateSignal;
+	import signals.requests.RequestGalleryUpdateSignal;
 
 	public class FlickrImageService implements IPhotoGalleryService
 	{

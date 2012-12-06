@@ -21,7 +21,7 @@ package {
 	import service.FlickrImageService;
 	import service.IPhotoGalleryService;
 
-	import signals.notifications.RequestGalleryUpdateSignal;
+	import signals.requests.RequestGalleryUpdateSignal;
 	import signals.notifications.NotifyImageSelectedSignal;
 	import signals.requests.RequestGalleryLoadSignal;
 	import signals.requests.RequestImageSelectSignal;

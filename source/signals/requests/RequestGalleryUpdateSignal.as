@@ -1,4 +1,4 @@
-package signals.notifications
+package signals.requests
 {
 
 	import model.vo.GalleryItemVO;

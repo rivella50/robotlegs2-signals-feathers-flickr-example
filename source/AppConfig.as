@@ -8,13 +8,12 @@ package {
 
 	import model.GalleryModel;
 
-	import org.swiftsuspenders.Injector;
-
 	import robotlegs.bender.extensions.contextView.ContextView;
 	import robotlegs.bender.extensions.mediatorMap.api.IMediatorMap;
 	import robotlegs.bender.extensions.signalCommandMap.api.ISignalCommandMap;
 	import robotlegs.bender.framework.api.IConfig;
 	import robotlegs.bender.framework.api.IContext;
+	import robotlegs.bender.framework.api.IInjector;
 	import robotlegs.bender.framework.api.ILogger;
 	import robotlegs.bender.framework.api.LogLevel;
 
@@ -43,7 +42,7 @@ package {
 		public var mediatorMap:IMediatorMap;
 
 		[Inject]
-		public var injector:Injector;
+		public var injector:IInjector; // http://knowledge.robotlegs.org/discussions/robotlegs-2/3977-injector-is-missing-to-handle-injection-into-property-injector
 
 		[Inject]
 		public var logger:ILogger;
@@ -79,7 +78,7 @@ package {
 			injector.map( IPhotoGalleryService ).toSingleton( FlickrImageService );
 
 			// Start.
-			context.lifecycle.afterInitializing( init );
+			context.afterInitializing( init );
 
 		}
 
